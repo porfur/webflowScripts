@@ -9,24 +9,39 @@ const parents = document.querySelectorAll(
 
 parents.forEach((parent) => {
   const targetSelector = parent.getAttribute(toggleTarget);
-  const targets = parent.querySelectorAll(targetSelector);
-  const className = parent.getAttribute(toggleClass);
   const eventNames = parent
     .getAttribute(toggleEvents)
     .split(",")
     .map((ev) => ev.trim());
 
+  const targets = parent.querySelectorAll(targetSelector);
   const childToggleClasses = Array.from(parent.attributes)
     .filter((attr) => attr.name.includes(toggleChildren))
     .map((attr) => attr.value.split(":").map((str) => str.trim()));
+
+  childToggleClasses.forEach(([selector, className]) => {
+
+    parent
+      .querySelectorAll(selector)
+      .forEach((child) => child.setAttribute(toggleClass, className));
+  });
+
+  targets.forEach((targetNode) =>
+    targetNode.setAttribute(toggleClass, parent.getAttribute(toggleClass)),
+  );
 
   targets.forEach((target) => {
     eventNames.forEach((eventName) => {
       target.addEventListener(eventName, (e) => {
         targets.forEach((__target) => {
           if (e.currentTarget !== __target) {
-            e.currentTarget.classList.add(className);
-            __target.classList.remove(className);
+            e.currentTarget.classList.add(
+              e.currentTarget.getAttribute(toggleClass),
+            );
+            __target.classList.remove(__target.getAttribute(toggleClass));
+
+            e.currentTarget.querySelectorAll(`[${toggleClass}]`).forEach(child=>child.classList.add(child.getAttribute(toggleClass)))
+            __target.querySelectorAll(`[${toggleClass}]`).forEach(child=>child.classList.remove(child.getAttribute(toggleClass)))
           }
         });
       });
@@ -34,22 +49,3 @@ parents.forEach((parent) => {
   });
 });
 
-//_____________________________________
-const openSpine = "open-spine";
-const spines = Array.from(document.querySelectorAll(".spine"));
-
-spines.forEach((spine) => {
-  spine.addEventListener("click", (e) => {
-    const currentTarget = e.currentTarget;
-    const currentLever = currentTarget.querySelector(".pg-title__lever");
-    spines.forEach((_spine) => {
-      const lever = _spine.querySelector(".pg-title__lever");
-      if (currentTarget !== _spine) {
-        currentTarget.classList.add(openSpine);
-        currentLever.classList.add(openSpine);
-        _spine.classList.remove(openSpine);
-        lever.classList.remove(openSpine);
-      }
-    });
-  });
-});
