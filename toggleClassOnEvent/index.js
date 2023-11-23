@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded'setupClassToggle)
+
 function setupClassToggle() {
   const toggleTarget = "op-toggle-target-selector";
   const toggleEvents = "op-toggle-events";
