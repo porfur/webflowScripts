@@ -1,11 +1,11 @@
-document.addEventListener('DOMContentLoaded',setupClassToggle)
+document.addEventListener("DOMContentLoaded", setupClassToggle);
 
 function setupClassToggle() {
   const toggleTarget = "op-toggle-target-selector";
   const toggleEvents = "op-toggle-events";
   const toggleClass = "op-toggle-class";
   const toggleChildren = "op-toggle-child-";
-  const toggleCloseOthers = 'op-toggle-close-others'
+  const toggleCloseOthers = "op-toggle-close-others";
 
   const parents = document.querySelectorAll(
     `[${toggleTarget}][${toggleEvents}][${toggleClass}]`,
@@ -17,7 +17,7 @@ function setupClassToggle() {
       .getAttribute(toggleEvents)
       .split(",")
       .map((ev) => ev.trim());
-    const closeOthers = parent.getAttribute(toggleCloseOthers)!==null
+    const shouldCloseOthers = parent.getAttribute(toggleCloseOthers) !== null;
 
     const targets = parent.querySelectorAll(targetSelector);
     const childToggleClasses = Array.from(parent.attributes)
@@ -34,21 +34,27 @@ function setupClassToggle() {
       targetNode.setAttribute(toggleClass, parent.getAttribute(toggleClass)),
     );
 
+    let currentTarget;
     targets.forEach((target) => {
+      currentTarget = target.classList.contains(
+        target.getAttribute(toggleClass),
+      )
+        ? target
+        : null;
+
       eventNames.forEach((eventName) => {
         target.addEventListener(eventName, (e) => {
-          targets.forEach((__target) => {
-            if (e.currentTarget !== __target&&closeOthers) {
-              e.currentTarget.classList.add(
-                e.currentTarget.getAttribute(toggleClass),
-              );
-              __target.classList.remove(__target.getAttribute(toggleClass));
+          currentTarget = e.currentTarget;
+          currentTarget.classList.add(currentTarget.getAttribute(toggleClass));
+          currentTarget
+            .querySelectorAll(`[${toggleClass}]`)
+            .forEach((child) =>
+              child.classList.add(child.getAttribute(toggleClass)),
+            );
 
-              e.currentTarget
-                .querySelectorAll(`[${toggleClass}]`)
-                .forEach((child) =>
-                  child.classList.add(child.getAttribute(toggleClass)),
-                );
+          targets.forEach((__target) => {
+            if (shouldCloseOthers && __target !== currentTarget) {
+              __target.classList.remove(__target.getAttribute(toggleClass));
               __target
                 .querySelectorAll(`[${toggleClass}]`)
                 .forEach((child) =>
