@@ -1,16 +1,43 @@
 document.addEventListener("DOMContentLoaded", setupClassToggle);
 
+function handleOnSecondEvent(node, attrName, secondEventAttrName) {
+  const shouldClose = node.getAttribute(secondEventAttrName) !== null;
+  if (shouldClose) {
+    deactivateNodeAndChildren(node, attrName);
+    node.removeAttribute(secondEventAttrName, "");
+  } else {
+    node.setAttribute(secondEventAttrName, "");
+  }
+}
+function resetSecondEventTracker(condition, targetNode, attrName) {
+  condition && targetNode.removeAttribute(attrName, "");
+}
+function activateNodeAndChildren(parentNode, attrName) {
+  parentNode.classList.add(parentNode.getAttribute(attrName));
+  parentNode
+    .querySelectorAll(`[${attrName}]`)
+    .forEach((child) => child.classList.add(child.getAttribute(attrName)));
+}
+
+function deactivateNodeAndChildren(parentNode, attrName) {
+  parentNode.classList.remove(parentNode.getAttribute(attrName));
+  parentNode
+    .querySelectorAll(`[${attrName}]`)
+    .forEach((child) => child.classList.remove(child.getAttribute(attrName)));
+}
+
 function addCustomAttributeToNodes(nodes, attrName, attrValue) {
   nodes.forEach((node) => node.setAttribute(attrName, attrValue));
 }
-function addCustomAttributeToChildren(parent,tupleArr,attrName){
-    tupleArr.forEach(([selector, className]) => {
-      const childNodes= parent.querySelectorAll(selector);
-      addCustomAttributeToNodes(childNodes, attrName, className);
-    });
+function addCustomAttributeToChildren(parent, tupleArr, attrName) {
+
+  tupleArr.forEach(([selector, className]) => {
+    const childNodes = parent.querySelectorAll(selector);
+    addCustomAttributeToNodes(childNodes, attrName, className);
+  });
 }
 function getChildrenToggleClasses(parent, identifierAttr) {
-  Array.from(parent.attributes)
+  return Array.from(parent.attributes)
     .filter((attr) => attr.name.includes(identifierAttr))
     .map((attr) => attr.value.split(":").map((str) => str.trim()));
 }
@@ -49,49 +76,37 @@ function setupClassToggle() {
     addCustomAttributeToNodes(targets, toggleClass, targetToggleClass);
     addCustomAttributeToChildren(parent, childToggleClasses, toggleClass);
 
-    let currentTarget;
+    let activeNode;
     targets.forEach((target) => {
-      currentTarget = target.classList.contains(
-        parent.getAttribute(toggleClass),
-      )
+      activeNode = target.classList.contains(parent.getAttribute(toggleClass))
         ? target
         : null;
 
       eventNames.forEach((eventName) => {
         target.addEventListener(eventName, (e) => {
-          currentTarget = e.currentTarget;
-          const className = currentTarget.getAttribute(toggleClass);
-          currentTarget.classList.add(className);
-          currentTarget
-            .querySelectorAll(`[${toggleClass}]`)
-            .forEach((child) =>
-              child.classList.add(child.getAttribute(toggleClass)),
-            );
-          if (shouldCloseOnSecondEvent) {
-            const shouldClose =
-              target.getAttribute(toggleOptionCloseOnSecondEvent) !== null;
-            if (shouldClose) {
-              target.classList.remove(target.getAttribute(toggleClass));
-              target
-                .querySelectorAll(`[${toggleClass}]`)
-                .forEach((child) =>
-                  child.classList.remove(child.getAttribute(toggleClass)),
-                );
-              target.removeAttribute(toggleOptionCloseOnSecondEvent, "");
-            } else target.setAttribute(toggleOptionCloseOnSecondEvent, "");
-          }
+          //Handle the behavior of the clicked target
+          activeNode = e.currentTarget;
+          activateNodeAndChildren(activeNode, toggleClass);
 
+          //Handles the behavior of the non clicked targets
           targets.forEach((__target) => {
-            if (shouldCloseOthers && __target !== currentTarget) {
-              __target.removeAttribute(toggleOptionCloseOnSecondEvent, "");
-              __target.classList.remove(__target.getAttribute(toggleClass));
-              __target
-                .querySelectorAll(`[${toggleClass}]`)
-                .forEach((child) =>
-                  child.classList.remove(child.getAttribute(toggleClass)),
-                );
+            if (shouldCloseOthers && __target !== activeNode) {
+              deactivateNodeAndChildren(__target, toggleClass);
+              resetSecondEventTracker(
+                shouldCloseOnSecondEvent,
+                __target,
+                toggleOptionCloseOnSecondEvent,
+              );
             }
           });
+
+          if (shouldCloseOnSecondEvent) {
+            handleOnSecondEvent(
+              target,
+              toggleClass,
+              toggleOptionCloseOnSecondEvent,
+            );
+          }
         });
       });
     });
