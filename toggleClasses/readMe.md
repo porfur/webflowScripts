@@ -84,10 +84,41 @@ There may be cases where you would like to click on a **target** and toggle the 
 For this there is the ```op-toggle__child``` attribute.
 To use this attribute give it a value with the following format ```childSelector : childToggleClass```.
 
-You can also add multiple children by separating each ```selector:class``` pair by commas ```,``` like so:
-```childSelector1 : childToggleClass1 , childSelector2 : childToggleClass2 , childSelector2 : childToggleClass3```
+You can also add multiple children by adding multiple ```op-toggle__child``` attributes and appending any sort of unique identifier to the attribute name. 
+
+Like so ```op-toggle__child1```,```op-toggle__child2```,```op-toggle__child-asdf```.
+Just make sure you don't have two of the same.
 
 ###Note Again
 Selectors require the CSS selector of the element you want. So ```.```in front of a className, ```#``` for an id, ```[]``` around attribute names, and nothing for tags.
+
+###The result should look like this
+	
+	<body
+		op-toggle__target-selector=".spine"
+		op-	toggle__class="open-spine"
+		op-toggle__events="click,contextmenu"
+		op-toggle__child-1="child:open-child"
+		op-toggle__child-2="nested-child:open-nested-child"
+		op-toggle__opt--close-others=""
+	>
+		<div class='spine'>
+			<div class='child'>
+				<div class='nested-child'></div>
+			</div>
+		</div>	
+		<div class='spine'>
+			<div class='child'>
+				<div class='nested-child'></div>
+			</div>
+		</div>	
+		<div class='spine'>
+			<div class='child'>
+				<div class='nested-child'></div>
+			</div>
+		</div>	
+
+	</body>
+
 
 ##If there are bugs let me know
