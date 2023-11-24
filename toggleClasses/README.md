@@ -1,21 +1,21 @@
 # Toggle classes on events for Webflow
 
-##1 Add script
+## 1 Add script
 Paste the following script in the in the before ```</body>``` block in your webflow page settings
 				
 	<script src='https://cdn.jsdelivr.net/gh/porfur/webflowScripts@main/toggleClasses/index.min.js'></script>
 				
-##2 Select desired targets
+## 2 Select desired targets
 Decide on the **target** element(s) you want to toggle when an event is triggered.
 Let's say multiple divs with the class ```.spine```.
 ```<div class='spine'>```
 
-###Note
+### Note
 This can be any css selector like an id ```#my-id```,tag ```div``` or attribute ```[my-attribute]```
 
 Selectors require the CSS selector of the element you want. So ```.```in front of a className, ```#``` for an id, ```[]``` around attribute names, and nothing for tags.
 
-##3 Locate target(s) parent
+## 3 Locate target(s) parent
 Locate the parent element of those divs.
 In out case the body.
 
@@ -25,7 +25,7 @@ In out case the body.
 		<div class='spine'></div>ac
 	</body>
 	
-##4 Add primary attributes
+## 4 Add primary attributes
 There are three attributes to add to the parent element.
 
 1. ```op-toggle__target-selector``` The value of this attribute should be set to the CSS selector of the **target** elements. In our case the class ```.spine```
@@ -37,7 +37,7 @@ There are three attributes to add to the parent element.
 3. ```op-toggle__events``` The event(s) you want to trigger the addition of the class. *You can also add multiple events separated by commas* ```,```.
 
 
-###The result should look like this
+### The result should look like this
 	
 	<body
 		op-toggle__target-selector=".spine"
@@ -60,10 +60,10 @@ These should be added without any values
 
 2.```op-toggle__opt--close-on-second-event``` This enables the option to "close" *(remove the class you set on ```op-toggle__class```)* from the **target** if you trigger the event *(ex: click)* a second time.
 
-###Note
+### Note
 You can use one or both of them at the same time.
 
-###The result should look like this
+### The result should look like this
 	
 	<body
 		op-toggle__target-selector=".spine"
