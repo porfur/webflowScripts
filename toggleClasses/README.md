@@ -52,7 +52,7 @@ There are three attributes to add to the parent element.
 At this point if you publish the project and click on a **target** the class will be added to it and that's it.
 Some extra options are required for having it toggle.
 
-##5 Behavior options
+## 5 Behavior options
 There are 2 behavior options you can add as attributes.
 These should be added without any values
 
@@ -78,7 +78,7 @@ You can use one or both of them at the same time.
 	</body>
 
 
-##6 Target children
+## 6 Target children
 There may be cases where you would like to click on a **target** and toggle the classes of it's children as-well. 
 
 For this there is the ```op-toggle__child``` attribute.
@@ -89,10 +89,10 @@ You can also add multiple children by adding multiple ```op-toggle__child``` att
 Like so ```op-toggle__child1```,```op-toggle__child2```,```op-toggle__child-asdf```.
 Just make sure you don't have two of the same.
 
-###Note Again
+### Note Again
 Selectors require the CSS selector of the element you want. So ```.```in front of a className, ```#``` for an id, ```[]``` around attribute names, and nothing for tags.
 
-###The result should look like this
+### The result should look like this
 	
 	<body
 		op-toggle__target-selector=".spine"
