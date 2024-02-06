@@ -95,4 +95,4 @@ After publishing check the html on the live page with the dev tools.
 The script uses custom attributes to store the values it should use, so you can change them in real time for testing.
 Try changing the scroll offset and see how it works.
 
-##If there are bugs let me know
+## If there are bugs let me know
