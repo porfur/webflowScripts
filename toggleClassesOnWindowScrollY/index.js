@@ -17,6 +17,7 @@ const opToggleClassesOnWindowScroll = (() => {
 
         if (passedOffset && !isActive) {
           activateNodeAndChildren(target, scrollClass);
+          isActive=true
         } else if (!passedOffset && isActive) {
           deactivateNodeAndChildren(target, scrollClass);
           isActive = false;
