@@ -3,7 +3,7 @@
 ## 1 Add script
 
 Paste the following script in the in the before `</body>` block in your webflow page settings
-<script src='https://cdn.jsdelivr.net/gh/porfur/webflowScripts@main/toggleClassesOnWindowScrollY/index.min.js'></script>
+`<script src='https://cdn.jsdelivr.net/gh/porfur/webflowScripts@main/toggleClassesOnWindowScrollY/index.min.js'></script>`
 
 ## 2 Select desired targets
 
