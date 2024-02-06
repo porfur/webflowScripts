@@ -10,11 +10,16 @@ const opToggleClassesOnWindowScroll = (() => {
 
       addCustomAttributeToChildren(target, childScrollClasses, scrollClass);
 
+      let isActive 
       window.addEventListener("scroll", () => {
-        if (window.scrollY > getScrollOffset(target, scrollOffset)) {
+        const offset = getScrollOffset(target, scrollOffset);
+        const passedOffset = window.scrollY > offset;
+
+        if (passedOffset && !isActive) {
           activateNodeAndChildren(target, scrollClass);
-        } else {
+        } else if (!passedOffset && isActive) {
           deactivateNodeAndChildren(target, scrollClass);
+          isActive = false;
         }
       });
     });
