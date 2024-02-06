@@ -10,7 +10,7 @@ const opToggleClassesOnWindowScroll = (() => {
 
       addCustomAttributeToChildren(target, childScrollClasses, scrollClass);
 
-      let isActive 
+      let isActive = false;
       window.addEventListener("scroll", () => {
         const offset = getScrollOffset(target, scrollOffset);
         const passedOffset = window.scrollY > offset;
