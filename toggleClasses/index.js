@@ -98,11 +98,13 @@ const opToggleClasses = (() => {
       addCustomAttributeToNodes(childNodes, attrName, className);
     });
   }
+
   function getChildrenToggleClasses(parent, identifierAttr) {
     return Array.from(parent.attributes)
       .filter((attr) => attr.name.includes(identifierAttr))
       .map((attr) => attr.value.split(":").map((str) => str.trim()));
   }
+
   function getEventNames(parent, identifierAttr) {
     return parent
       .getAttribute(identifierAttr)

@@ -41,7 +41,7 @@ There are three attributes to add to the parent element.
 	
 	<body
 		op-toggle__target-selector=".spine"
-		op-	toggle__class="open-spine"
+		op-toggle__class="open-spine"
 		op-toggle__events="click,contextmenu"
 	>
 		<div class='spine'></div>	
