@@ -1,14 +1,14 @@
 const opToggleClassesOnWindowScroll = (() => {
   function setup() {
-    const scrollClass = "op-scroll__class";
-    const scrollOffset = "op-scroll__offset";
-    const scrollChild = "op-scroll__child";
+    const scrollClass = "op-y-scroll__class";
+    const scrollOffset = "op-y-scroll__offset";
+    const scrollChild = "op-y-scroll__child";
     const targets = document.querySelectorAll(`[${scrollClass}]`);
 
     targets.forEach((target) => {
-      const childScrollClasses = getChildrenScrollClasses(target, scrollChild);
+      const childrenAndClasses = getChildrenAndClasses(target, scrollChild);
 
-      addCustomAttributeToChildren(target, childScrollClasses, scrollClass);
+      addCustomAttributeToChildren(target, childrenAndClasses, scrollClass);
 
       let isActive = false;
       window.addEventListener("scroll", () => {
@@ -57,7 +57,7 @@ const opToggleClassesOnWindowScroll = (() => {
     });
   }
 
-  function getChildrenScrollClasses(parent, identifierAttr) {
+  function getChildrenAndClasses(parent, identifierAttr) {
     return Array.from(parent.attributes)
       .filter((attr) => attr.name.includes(identifierAttr))
       .map((attr) => attr.value.split(":").map((str) => str.trim()));

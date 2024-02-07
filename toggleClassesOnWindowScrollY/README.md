@@ -32,12 +32,12 @@ In out case the div with the class `.nav-bar`.
 
 There is one attribute required for this toggle to work
 
-`op-scroll__class` The value of this attribute should be set to the class name you want to add when the scroll event is triggered.
+`op-y-scroll__class` The value of this attribute should be set to the class name you want to add when the scroll event is triggered.
 For example `white`
 
 ### The result should look like this
 
-    <div class='nav-bar', op-scroll__class='white'>
+    <div class='nav-bar', op-y-scroll__class='white'>
     	<button class='my-btn'></button>
     	<button class='my-btn'></button>
     	<button class='my-btn'></button>
@@ -48,11 +48,11 @@ Some extra options are available.
 
 ## 5 scroll offset
 
-Add a second attribute `op-scroll__offset` and set it to the nr of pixels you want to scroll before the event is triggered
+Add a second attribute `op-y-scroll__offset` and set it to the nr of pixels you want to scroll before the event is triggered
 
 ### The result should look like this
 
-    <div class='nav-bar', op-scroll__class='white',op-scroll__offset='400'>
+    <div class='nav-bar', op-y-scroll__class='white',op-scroll__offset='400'>
     	<button class='my-btn'></button>
     	<button class='my-btn'></button>
     	<button class='my-btn'></button>
@@ -64,7 +64,7 @@ At this point if you publish the project and scroll down the class `white` will 
 
 There may be cases where you would like to toggle a **target** and the classes of it's children as-well.
 
-For this there is the `op-scroll__child` attribute.
+For this there is the `op-y-scroll__child` attribute.
 To use this attribute give it a value with the following format `childSelector : childToggleClass`.
 
 You can also add multiple children by adding multiple `op-toggle__child` attributes and appending any sort of unique identifier to the attribute name.
@@ -79,8 +79,8 @@ Selectors require the CSS selector of the element you want. So `.`in front of a 
 ### The result should look like this
 
     <div class='nav-bar'
-		op-scroll__class='white'
-		op-scroll__offset='400'
+		op-y-scroll__class='white'
+		op-y-scroll__offset='400'
 		op-toggle__child1=".my-btn:red">
 		op-toggle__child2=".my-btn:blue">
 		op-toggle__child3=".my-btn:green">
