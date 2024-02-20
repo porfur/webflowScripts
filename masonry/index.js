@@ -2,18 +2,19 @@ const opMasonry = (() => {
   function setup() {
     const masonryRoot = "op-masonry__root"; //Add this as attribute to collection wrap, set value to some unique ID
     const masonryTemplate = "op-masonry__col-template-for"; // Optional
-    const masonryCssVariable = "op-masonry__col-css-var";
-    const masonryDelay = "op-masonry__delay";//defaults to 100ms
-    const masonryChild = "op-masonry__child";//Mark children with this 
+    const masonryCssVariable = "op-masonry__col-css-var"; // The css var name
+    const masonryDelay = "op-masonry__delay"; //defaults to 100ms
+    const masonryChild = "op-masonry__child-selector"; //Mark children with this
 
     const roots = document.querySelectorAll(`[${masonryRoot}]`);
 
     roots.forEach((root) => {
+      const childSelector = root.getAttribute(masonryChild);
       const delay = parseInt(root.getAttribute(masonryDelay)) || 100;
       const id = root.getAttribute(masonryRoot);
       const cssVarName = root.getAttribute(masonryCssVariable);
       const templateCss = getTemplateColCss(id, masonryTemplate);
-      const children = root.querySelectorAll(`[${masonryChild}]`);
+      const children = root.querySelectorAll(childSelector);
       const parent = children[0].parentElement;
       let colNr = getColNr(cssVarName);
 
@@ -38,7 +39,6 @@ const opMasonry = (() => {
   }
 
   //Helpers
-
   function getMasonry(colNr, children, templateCss) {
     let columns = document.createDocumentFragment();
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
@@ -73,7 +73,7 @@ const opMasonry = (() => {
     if (id) {
       templateNode = document.querySelector(`[${masonryTemplate}="${id}"]`);
       css = templateNode?.classList || css;
-      templateNode.remove();
+      templateNode?.remove();
     }
     return css;
   }
