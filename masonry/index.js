@@ -4,11 +4,12 @@ const opMasonry = (() => {
     const masonryTemplate = "op-masonry__col-template-for"; // Optional
     const masonryCssVariable = "op-masonry__col-css-var"; // The css var name
     const masonryDelay = "op-masonry__delay"; //defaults to 100ms
-    const masonryChild = "op-masonry__child-selector"; //Mark children with this
+    const masonryChild = "op-masonry__child-selector";
 
     const roots = document.querySelectorAll(`[${masonryRoot}]`);
 
     roots.forEach((root) => {
+      root.style.visibility = "hidden";
       const childSelector = root.getAttribute(masonryChild);
       const delay = parseInt(root.getAttribute(masonryDelay)) || 100;
       const id = root.getAttribute(masonryRoot);
@@ -16,6 +17,10 @@ const opMasonry = (() => {
       const templateCss = getTemplateColCss(id, masonryTemplate);
       const children = root.querySelectorAll(childSelector);
       const parent = children[0].parentElement;
+
+      parent.style.display = "flex";
+      parent.style.flexDirection = "row";
+
       let colNr = getColNr(cssVarName);
 
       const updateMasonry = () => {
@@ -33,6 +38,7 @@ const opMasonry = (() => {
       };
 
       updateMasonry();
+      root.style.removeProperty("visibility");
       window.removeEventListener("resize", onResize);
       window.addEventListener("resize", onResize);
     });
