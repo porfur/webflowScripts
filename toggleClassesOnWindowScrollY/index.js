@@ -1,10 +1,10 @@
-const opToggleClassesOnWindowScroll = (() => {
+const opToggleClassesOnWindowScrollY = (() => {
   function setup() {
     const scrollClass = "op-y-scroll__class";
     const scrollOffset = "op-y-scroll__offset";
     const scrollChild = "op-y-scroll__child";
-    const scrollCondition = "op-y-scroll__condition";
-    const scrollConditionType = "op-y-scroll__cond-type";
+    const scrollCondition = "op-y-scroll__trigger-condition";
+    const scrollConditionType = "op-y-scroll__trigger-condition-type";
     const every = "every"; // Default
     const some = "some";
     const getConditionResult = {
@@ -109,4 +109,4 @@ const opToggleClassesOnWindowScroll = (() => {
   return setup;
 })();
 
-document.addEventListener("DOMContentLoaded", opToggleClassesOnWindowScroll);
+document.addEventListener("DOMContentLoaded", opToggleClassesOnWindowScrollY);
