@@ -89,7 +89,7 @@ Selectors require the CSS selector of the element you want. So `.`in front of a 
     		<button class='my-btn3'></button>
     </div>
 
-## 7 Target children
+## 7 Conditional toggle
 
 There may be cases where you would like to toggle a **target** only if another element has a specific class.
 For example: Toggle the color of a nav bar only if the body has a specific class applied.
