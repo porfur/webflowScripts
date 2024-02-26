@@ -50,7 +50,7 @@ const opMasonry = (() => {
     let columns = document.createDocumentFragment();
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
       const column = document.createElement("div");
-      if (templateCss) {
+      if (templateCss.length<0) {
         column.classList.add(...templateCss);
       } else {
         column.style.width = `calc(100% / var(${cssVarName}))`;
