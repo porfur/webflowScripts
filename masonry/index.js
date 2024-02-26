@@ -58,6 +58,7 @@ const opMasonry = (() => {
         rowIndex < children.length;
         rowIndex += colNr
       ) {
+        children[rowIndex].style.width = '100%'
         column.appendChild(children[rowIndex]);
       }
     }
