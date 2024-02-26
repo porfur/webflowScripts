@@ -20,6 +20,7 @@ const opMasonry = (() => {
 
       parent.style.display = "flex";
       parent.style.flexDirection = "row";
+      parent.style.flexWrap = "no-wrap";
 
       let colNr = getColNr(cssVarName);
 
