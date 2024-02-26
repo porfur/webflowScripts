@@ -50,7 +50,12 @@ const opMasonry = (() => {
     let columns = document.createDocumentFragment();
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
       const column = document.createElement("div");
-      column.classList.add(...templateCss);
+      if (templateCss) {
+        column.classList.add(...templateCss);
+      } else {
+        column.style.width = `calc(100% / var(${cssVarName}))`;
+      }
+
       columns.appendChild(column);
 
       for (
@@ -58,7 +63,7 @@ const opMasonry = (() => {
         rowIndex < children.length;
         rowIndex += colNr
       ) {
-        children[rowIndex].style.width = '100%'
+        children[rowIndex].style.width = "100%";
         column.appendChild(children[rowIndex]);
       }
     }
