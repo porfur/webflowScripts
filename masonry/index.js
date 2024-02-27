@@ -25,7 +25,7 @@ const opMasonry = (() => {
       let colNr = getColNr(cssVarName);
 
       const updateMasonry = () => {
-        parent.replaceChildren(getMasonry(colNr, children, templateCss));
+        parent.replaceChildren(getMasonry(colNr, children, cssVarName,templateCss));
       };
 
       const onResize = () => {
@@ -46,7 +46,7 @@ const opMasonry = (() => {
   }
 
   //Helpers
-  function getMasonry(colNr, children, templateCss) {
+  function getMasonry(colNr, children,cssVarName templateCss) {
     let columns = document.createDocumentFragment();
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
       const column = document.createElement("div");
