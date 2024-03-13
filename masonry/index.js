@@ -2,7 +2,8 @@ const opMasonry = (() => {
   function setup() {
     const masonryRoot = "op-masonry__root"; //Add this as attribute to collection wrap, set value to some unique ID
     const masonryTemplate = "op-masonry__col-template-for"; // Optional
-    const masonryCssVariable = "op-masonry__col-css-var"; // The css var name
+    const masonryColumnCssVariable = "op-masonry__col-css-var"; // The css var name
+    const masonryRowCssVariable = "op-masonry__row-css-var"; // The css var name
     const masonryDelay = "op-masonry__delay"; //defaults to 100ms
     const masonryChild = "op-masonry__child-selector";
 
@@ -13,7 +14,8 @@ const opMasonry = (() => {
       const childSelector = root.getAttribute(masonryChild);
       const delay = parseInt(root.getAttribute(masonryDelay)) || 100;
       const id = root.getAttribute(masonryRoot);
-      const cssVarName = root.getAttribute(masonryCssVariable);
+      const cssVarNameColumns = root.getAttribute(masonryColumnCssVariable);
+      const cssVarNameRows = root.getAttribute(masonryRowCssVariable);
       const templateCss = getTemplateColCss(id, masonryTemplate);
       const children = root.querySelectorAll(childSelector);
       const parent = children[0].parentElement;
@@ -22,15 +24,19 @@ const opMasonry = (() => {
       parent.style.flexDirection = "row";
       parent.style.flexFlow = "nowrap";
 
-      let colNr = getColNr(cssVarName);
+      let colNr = getColNr(cssVarNameColumns, cssVarNameRows, children);
 
       const updateMasonry = () => {
-        parent.replaceChildren(getMasonry(colNr, children, cssVarName,templateCss));
+        parent.replaceChildren(getMasonry(colNr, children, templateCss));
       };
 
       const onResize = () => {
         setTimeout(() => {
-          const newColNr = getColNr(cssVarName);
+          const newColNr = getColNr(
+            cssVarNameColumns,
+            cssVarNameRows,
+            children,
+          );
           if (newColNr !== colNr) {
             colNr = newColNr;
             updateMasonry();
@@ -46,14 +52,14 @@ const opMasonry = (() => {
   }
 
   //Helpers
-  function getMasonry(colNr, children,cssVarName,templateCss) {
+  function getMasonry(colNr, children, templateCss) {
     let columns = document.createDocumentFragment();
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
       const column = document.createElement("div");
-      if (templateCss.length>0) {
+      if (templateCss.length > 0) {
         column.classList.add(...templateCss);
       } else {
-        column.style.width = `calc(100% / var(${cssVarName}))`;
+        column.style.width = `calc(100% / ${colNr})`;
       }
 
       columns.appendChild(column);
@@ -70,14 +76,24 @@ const opMasonry = (() => {
     return columns;
   }
 
-  function getColNr(cssVarName) {
-    return (
+  function getColNr(cssVarNameColumns, cssVarNameRows, children) {
+    const childrenNr = children.length;
+    const colNr =
       parseInt(
         window
           .getComputedStyle(document.documentElement)
-          .getPropertyValue(cssVarName),
-      ) || 0
-    );
+          .getPropertyValue(cssVarNameColumns),
+      ) || 0;
+    const rowNr =
+      parseInt(
+        window
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue(cssVarNameRows),
+      ) || 0;
+    if (rowNr) {
+      return Math.ceil(childrenNr / rowNr);
+    }
+    return colNr;
   }
 
   function getTemplateColCss(id, masonryTemplate) {
