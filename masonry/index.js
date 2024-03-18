@@ -6,12 +6,14 @@ const opMasonry = (() => {
     const masonryRowCssVariable = "op-masonry__row-css-var"; // The css var name
     const masonryDelay = "op-masonry__delay"; //defaults to 100ms
     const masonryChild = "op-masonry__child-selector";
+    const masonrySmartStack = "op-masonry__smart-stack";
 
     const roots = document.querySelectorAll(`[${masonryRoot}]`);
 
     roots.forEach((root) => {
       root.style.visibility = "hidden";
       const childSelector = root.getAttribute(masonryChild);
+      const isSmartStack = root.hasAttribute(masonrySmartStack);
       const delay = parseInt(root.getAttribute(masonryDelay)) || 100;
       const id = root.getAttribute(masonryRoot);
       const cssVarNameColumns = root.getAttribute(masonryColumnCssVariable);
@@ -27,7 +29,11 @@ const opMasonry = (() => {
       let colNr = getColNr(cssVarNameColumns, cssVarNameRows, children);
 
       const updateMasonry = () => {
-        parent.replaceChildren(getMasonry(colNr, children, templateCss));
+        parent.replaceChildren(
+          isSmartStack
+            ? getSmartMasonry(colNr, children, templateCss)
+            : getMasonry(colNr, children, templateCss),
+        );
       };
 
       const onResize = () => {
@@ -52,6 +58,40 @@ const opMasonry = (() => {
   }
 
   //Helpers
+  function getSmallestColumnHeightAndIndex(columnsHeights) {
+    const minVal = Math.min(...columnsHeights)
+     return columnsHeights.findIndex((item) => minVal===item)
+  }
+  function getColumnHeights(colNr){
+    const arr = []
+    for (let i = 0; i < colNr; i++) {
+      arr.push(0)
+    }
+    return arr
+  }
+
+  function getSmartMasonry(colNr, children, templateCss) {
+    let columnsFragment = document.createDocumentFragment();
+    let columnsHeights = getColumnHeights(colNr)
+    for (let colIndex = 0; colIndex < colNr; colIndex++) {
+      const column = document.createElement("div");
+      columnsFragment.appendChild(column);
+      if (templateCss.length > 0) {
+        column.classList.add(...templateCss);
+      } else {
+        column.style.width = `calc(100% / ${colNr})`;
+      }
+    }
+
+    children.forEach((child) => {
+      const index = getSmallestColumnHeightAndIndex(columnsHeights);
+      columnsHeights[index] += child.clientHeight;
+      columnsFragment.children[index].appendChild(child);
+    });
+
+    return columnsFragment;
+  }
+
   function getMasonry(colNr, children, templateCss) {
     let columns = document.createDocumentFragment();
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
