@@ -3,6 +3,8 @@ const collectionWrap = collectionList.parentElement;
 let children = Array.from(collectionList.children);
 const observer = new IntersectionObserver(intersectionCallback, {
   root: collectionWrap,
+  threshold:0,
+  rootMargin:"10%"
 });
 let leftPosition = getLeftPosition(collectionList);
 let isFirstRun = true;
@@ -10,6 +12,7 @@ let isFirstRun = true;
 observeCollection()
 
 function observeCollection(){
+  children.forEach((column) => observer.unobserve(column));
   children.forEach((column) => observer.observe(column));
 }
 
