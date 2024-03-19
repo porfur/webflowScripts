@@ -85,8 +85,9 @@ const opMasonry = (() => {
 
     children.forEach((child) => {
       const index = getSmallestColumnHeightAndIndex(columnsHeights);
-      columnsFragment.children[index].appendChild(child);
-      columnsHeights[index] += child.clientHeight;
+      const __child=child
+      columnsFragment.children[index].appendChild(__child);
+      columnsHeights[index] += __child.clientHeight;
     });
 
     return columnsFragment;
