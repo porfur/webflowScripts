@@ -4,7 +4,7 @@ let children = Array.from(collectionList.children);
 const observer = new IntersectionObserver(intersectionCallback, {
   root: collectionWrap,
   threshold:0,
-  rootMargin:"10%"
+  rootMargin:"50%"
 });
 let leftPosition = getLeftPosition(collectionList);
 let isFirstRun = true;
@@ -43,14 +43,14 @@ function getLeftPosition(collectionList) {
 function scrollLeft(condition, entry) {
   if (condition) {
     collectionList.append(collectionList.firstChild);
-    collectionWrap.scrollLeft -= entry.boundingClientRect.width;
+    collectionWrap.scrollLeft-=entry.boundingClientRect.width
   }
 }
 
 function scrollRight(condition, entry) {
   if (condition) {
     collectionList.prepend(collectionList.lastChild);
-    collectionWrap.scrollLeft += entry.boundingClientRect.width;
+        collectionWrap.scrollLeft+=entry.boundingClientRect.width;
   }
 }
 
@@ -86,7 +86,8 @@ function animationStep(now, fn) {
 }
 
 function scrollCollection() {
-  collectionWrap.scrollLeft += 1;
+      collectionWrap.scrollBy({left:1, behavior:"instant"}) ;
+
 }
 
 function animationCallback(timestamp) {
@@ -102,4 +103,5 @@ collectionWrap.addEventListener("mouseleave",(e)=>{
   e.preventDefault()
 animationID = requestAnimationFrame(animationCallback);
 })
+
 
