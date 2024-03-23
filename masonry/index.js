@@ -1,23 +1,30 @@
 const opMasonry = (() => {
-  function setup() {
-    const attr = {
-      root: "op-masonry__root", //Add this as attribute to collection wrap, set value to some unique ID
-      template: "op-masonry__col-template-for", // Optional
-      columnCssVariable: "op-masonry__col-css-var", // The css var name
-      rowCssVariable: "op-masonry__row-css-var", // The css var name
-      delay: "op-masonry__delay", //defaults to 100ms
-      child: "op-masonry__child-selector",
-      smartStack: "op-masonry__smart-stack",
-      lazy: "op-masonry__lazy",
-    };
-
+  const attr = {
+    root: "op-masonry__root", //Add this as attribute to collection wrap, set value to some unique ID
+    template: "op-masonry__col-template-for", // Optional
+    columnCssVariable: "op-masonry__col-css-var", // The css var name
+    rowCssVariable: "op-masonry__row-css-var", // The css var name
+    delay: "op-masonry__delay", //defaults to 100ms
+    child: "op-masonry__child-selector",
+    smartStack: "op-masonry__smart-stack",
+    lazy: "op-masonry__lazy",
+  };
+  function init() {
     const roots = document.querySelectorAll(`[${attr.root}]`);
+    getApplyMasonryToAllRootsFn(roots)();
 
-    roots.forEach((root) => applyMasonryToRoot(root, attr));
+    // [[ Global helpers ]]
+    function getApplyMasonryToAllRootsFn(roots) {
+      function applyMasonryToAllRoots(index = 0) {
+        if (index >= roots.length) return;
+        applyMasonryToSingleRoot(roots[index]);
+        applyMasonryToAllRoots(index + 1);
+      }
+      return applyMasonryToAllRoots;
+    }
   }
 
-  // [[ Global helpers ]]
-  function applyMasonryToRoot(root, attr) {
+  function applyMasonryToSingleRoot(root) {
     root.style.visibility = "hidden";
     const childSelector = root.getAttribute(attr.child);
     const isSmartStack = root.hasAttribute(attr.smartStack);
@@ -87,7 +94,7 @@ const opMasonry = (() => {
 
   function getSmartStackMasonry(colNr, children, templateCss) {
     const columnsFragment = makeColumnsFragment(colNr, templateCss);
-    const columns = Array.from(columnsFragment.children)
+    const columns = Array.from(columnsFragment.children);
     const heightsTracker = makeColumnHeightsTracker(colNr);
     getSmartStackItemPlacementFn({ children, heightsTracker, columns })();
     return columnsFragment;
@@ -116,18 +123,20 @@ const opMasonry = (() => {
   function getLazyMasonry(colNr, children, templateCss) {
     const columnsFragment = makeColumnsFragment(colNr, templateCss);
     const heightsTracker = makeColumnHeightsTracker(colNr);
-    const columns = Array.from(columnsFragment.children)
+    const columns = Array.from(columnsFragment.children);
     getLazyItemPlacementFn({ children, heightsTracker, columns })();
 
     function getLazyItemPlacementFn({ children, heightsTracker, columns }) {
       function placeLazyItems(index = 0) {
         if (index >= children.length) return;
         const child = children[index];
-        const lazyItems = Array.from( child.querySelectorAll('[loading="lazy"]'),);
+        const lazyItems = Array.from(
+          child.querySelectorAll('[loading="lazy"]'),
+        );
         const isLazyItemsLoaded = isEveryElementLoaded(lazyItems);
         const smallestColumnIndex = getSmallestColumnIndex(heightsTracker);
         let onLoadDidRun = false;
-        batchAddEventTo(lazyItems,"load", onLoad);
+        const removeOnLoadFromLazyItems = batchAddEventTo(lazyItems, "load", onLoad);
 
         if (isLazyItemsLoaded) {
           batchRequestAnimationFrameFor(lazyItems, dispatchLoadEvent);
@@ -135,14 +144,14 @@ const opMasonry = (() => {
 
         columns[smallestColumnIndex].append(child);
 
-        function onLoad(e) {
-          e.currentTarget.removeEventListener("load", onLoad);
-          if (onLoadDidRun) {
-            return;
+        function onLoad() {
+          if (onLoadDidRun) { return; }
+          if (isEveryElementLoaded(lazyItems)) {
+            onLoadDidRun = true;
+            requestAnimationFrame( removeOnLoadFromLazyItems )
+            heightsTracker[smallestColumnIndex] += getHeight(child);
+            placeLazyItems(index + 1);
           }
-          onLoadDidRun = true;
-          heightsTracker[smallestColumnIndex] += getHeight(child);
-          placeLazyItems(index + 1);
         }
       }
       return placeLazyItems;
@@ -223,7 +232,18 @@ const opMasonry = (() => {
     for (let i = 0; i < arrLen; i++) {
       arr[i].addEventListener(event, callback);
     }
+    return (condition=true)=>{
+      if (!condition) return
+      batchRemoveEventsFrom(arr,event,callback)
+    }
   }
+
+    function batchRemoveEventsFrom(arr,event,callback) {
+      for (let i = 0; i < arrLen; i++) {
+        arr[i].removeEventListener(event, callback);
+    }
+  }
+
   function batchRequestAnimationFrameFor(arr, callback) {
     const arrLen = arr.length;
     for (let i = 0; i < arrLen; i++) {
@@ -235,7 +255,7 @@ const opMasonry = (() => {
     item.dispatchEvent(new Event("load"));
   }
 
-  return setup;
+  return init;
 })();
 
 document.addEventListener("DOMContentLoaded", opMasonry);
