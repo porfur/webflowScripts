@@ -145,4 +145,20 @@ This is usually used to have lots of columns that scroll horizontally.
 It should be used in combination with ```op-masonry__col-template-for``` in order to style the column width.
 
 
+## 7 Smart stack
+
+By default the items are stacked in order from left to right regardless of their height.
+In extreme cases this may lead to the bottom of the stack being really uneven.
+If the precise order of the items is not important to you can add the attribute ```op-masonry__smart-stack```
+This always places the next item in the shortest column possible.
+The sorting order is still maintained but it's not as precise.
+
+
+## 7 Lazy
+
+If the collection-items contain lazy loading images that influence it's height
+you can add the attribute ```op-masonry__lazy```.
+This automatically behaves like the ```op-masonry__smart-stack```
+but places each item only after the previous one has been loaded
+
 ## If there are any bugs let me know
