@@ -18,7 +18,7 @@ const opMasonry = (() => {
   function applyMasonryToAllRoots(roots) {
     const rootsLength = roots.length;
     for (let i = 0; i < rootsLength; i++) {
-      const root = array[i];
+      const root = roots[i];
       applyMasonryToSingleRoot(root);
     }
   }
