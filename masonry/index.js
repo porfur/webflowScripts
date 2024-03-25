@@ -11,21 +11,19 @@ const opMasonry = (() => {
   };
   function init() {
     const roots = document.querySelectorAll(`[${attr.root}]`);
-    getApplyMasonryToAllRootsFn(roots)();
+    applyMasonryToAllRoots(roots);
+  }
 
-    // [[ Global helpers ]]
-    function getApplyMasonryToAllRootsFn(roots) {
-      function applyMasonryToAllRoots(index = 0) {
-        if (index >= roots.length) return;
-        applyMasonryToSingleRoot(roots[index]);
-        applyMasonryToAllRoots(index + 1);
-      }
-      return applyMasonryToAllRoots;
+  // [[ Global helpers ]]
+  function applyMasonryToAllRoots(roots) {
+    const rootsLength = roots.length;
+    for (let i = 0; i < rootsLength; i++) {
+      const root = array[i];
+      applyMasonryToSingleRoot(root);
     }
   }
 
   function applyMasonryToSingleRoot(root) {
-    root.style.visibility = "hidden";
     const childSelector = root.getAttribute(attr.child);
     const isSmartStack = root.hasAttribute(attr.smartStack);
     const isLazy = root.hasAttribute(attr.lazy);
@@ -35,20 +33,21 @@ const opMasonry = (() => {
     const cssVarNameRows = root.getAttribute(attr.rowCssVariable);
     const templateCss = getTemplateColCss(id, attr.template);
     const children = root.querySelectorAll(childSelector);
-    const parent = children[0].parentElement;
     let currentColumnNr = getColumnNr(
       cssVarNameColumns,
       cssVarNameRows,
       children,
     );
-
+    // In case the attriutes are added to the collection wrap
+    const parent = children[0].parentElement;
     window.removeEventListener("resize", onResize);
     window.addEventListener("resize", onResize);
 
     updateMasonry(currentColumnNr);
-    root.style.removeProperty("visibility");
 
     // Override possible conflicting styles from webflow
+    root.style.removeProperty("visibility");
+    parent.style.removeProperty("visibility");
     parent.style.display = "flex";
     parent.style.flexDirection = "row";
     parent.style.flexFlow = "nowrap";
@@ -56,11 +55,11 @@ const opMasonry = (() => {
     // [[ Local Helpers ]]
     function updateMasonry(colNr) {
       parent.replaceChildren(
-        isSmartStack
-          ? isLazy
-            ? getLazyMasonry(colNr, children, templateCss)
-            : getSmartStackMasonry(colNr, children, templateCss)
-          : getMasonry(colNr, children, templateCss),
+        isLazy
+          ? getLazyMasonry(colNr, children, templateCss)
+          : isSmartStack
+            ? getSmartStackMasonry(colNr, children, templateCss)
+            : getMasonry(colNr, children, templateCss),
       );
     }
 
@@ -105,9 +104,7 @@ const opMasonry = (() => {
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
       const column = document.createElement("div");
       addStyleToColumn(column, colNr, templateCss);
-
       columnsFragment.appendChild(column);
-
       for (
         let rowIndex = colIndex;
         rowIndex < children.length;
@@ -125,37 +122,6 @@ const opMasonry = (() => {
     const heightsTracker = makeColumnHeightsTracker(colNr);
     const columns = Array.from(columnsFragment.children);
     getLazyItemPlacementFn({ children, heightsTracker, columns })();
-
-    function getLazyItemPlacementFn({ children, heightsTracker, columns }) {
-      function placeLazyItems(index = 0) {
-        if (index >= children.length) return;
-        const child = children[index];
-        const lazyItems = Array.from(
-          child.querySelectorAll('[loading="lazy"]'),
-        );
-        const isLazyItemsLoaded = isEveryElementLoaded(lazyItems);
-        const smallestColumnIndex = getSmallestColumnIndex(heightsTracker);
-        let onLoadDidRun = false;
-        const removeOnLoadFromLazyItems = batchAddEventTo(lazyItems, "load", onLoad);
-
-        if (isLazyItemsLoaded) {
-          batchRequestAnimationFrameFor(lazyItems, dispatchLoadEvent);
-        }
-
-        columns[smallestColumnIndex].append(child);
-
-        function onLoad() {
-          if (onLoadDidRun) { return; }
-          if (isEveryElementLoaded(lazyItems)) {
-            onLoadDidRun = true;
-            requestAnimationFrame( removeOnLoadFromLazyItems )
-            heightsTracker[smallestColumnIndex] += getHeight(child);
-            placeLazyItems(index + 1);
-          }
-        }
-      }
-      return placeLazyItems;
-    }
     return columnsFragment;
   }
 
@@ -214,7 +180,40 @@ const opMasonry = (() => {
   function getHeight(child) {
     return child.getBoundingClientRect().height;
   }
+  function getLazyItemPlacementFn({ children, heightsTracker, columns }) {
+    function placeLazyItems(index = 0) {
+      if (index >= children.length) return;
+      const child = children[index];
+      const lazyItems = Array.from(child.querySelectorAll('[loading="lazy"]'));
+      const isLazyItemsLoaded = isEveryElementLoaded(lazyItems);
+      const smallestColumnIndex = getSmallestColumnIndex(heightsTracker);
+      let onLoadDidRun = false;
+      const removeOnLoadFromLazyItems = batchAddEventTo(
+        lazyItems,
+        "load",
+        onLoad,
+      );
 
+      if (isLazyItemsLoaded) {
+        batchRequestAnimationFrameFor(lazyItems, dispatchLoadEvent);
+      }
+
+      columns[smallestColumnIndex].append(child);
+
+      function onLoad() {
+        if (onLoadDidRun) {
+          return;
+        }
+        if (isEveryElementLoaded(lazyItems)) {
+          onLoadDidRun = true;
+          requestAnimationFrame(removeOnLoadFromLazyItems);
+          heightsTracker[smallestColumnIndex] += getHeight(child);
+          placeLazyItems(index + 1);
+        }
+      }
+    }
+    return placeLazyItems;
+  }
   function getSmartStackItemPlacementFn({ children, heightsTracker, columns }) {
     function placeSmartStackItems(index = 0) {
       if (index >= children.length) return;
@@ -232,15 +231,15 @@ const opMasonry = (() => {
     for (let i = 0; i < arrLen; i++) {
       arr[i].addEventListener(event, callback);
     }
-    return (condition=true)=>{
-      if (!condition) return
-      batchRemoveEventsFrom(arr,event,callback)
-    }
+    return (condition = true) => {
+      if (!condition) return;
+      batchRemoveEventsFrom(arr, event, callback);
+    };
   }
 
-    function batchRemoveEventsFrom(arr,event,callback) {
-      for (let i = 0; i < arrLen; i++) {
-        arr[i].removeEventListener(event, callback);
+  function batchRemoveEventsFrom(arr, event, callback) {
+    for (let i = 0; i < arrLen; i++) {
+      arr[i].removeEventListener(event, callback);
     }
   }
 
