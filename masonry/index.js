@@ -238,6 +238,7 @@ const opMasonry = (() => {
   }
 
   function batchRemoveEventsFrom(arr, event, callback) {
+    const arrLen = arr.length;
     for (let i = 0; i < arrLen; i++) {
       arr[i].removeEventListener(event, callback);
     }
