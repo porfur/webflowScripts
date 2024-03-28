@@ -100,17 +100,10 @@ const opMasonry = (() => {
   }
 
   function getMasonry(colNr, children, templateCss) {
-    let columnsFragment = document.createDocumentFragment();
+    let columnsFragment= makeColumnsFragment(colNr,templateCss)
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
-      const column = document.createElement("div");
-      addStyleToColumn(column, colNr, templateCss);
-      columnsFragment.appendChild(column);
-      for (
-        let rowIndex = colIndex;
-        rowIndex < children.length;
-        rowIndex += colNr
-      ) {
-        children[rowIndex].style.width = "100%";
+      const column = columnsFragment.children[colIndex]
+      for ( let rowIndex = colIndex; rowIndex < children.length; rowIndex += colNr) {
         column.appendChild(children[rowIndex]);
       }
     }
@@ -167,13 +160,16 @@ const opMasonry = (() => {
     return fragment;
   }
 
-  function makeColumn(colNr, templateCss) {
-    const column = document.createElement("div");
+  function addStyleToColumn(column, colNr, templateCss) {
     if (templateCss.length > 0) {
       column.classList.add(...templateCss);
     } else {
       column.style.width = `calc(100% / ${colNr})`;
     }
+  }
+  function makeColumn(colNr, templateCss) {
+    const column = document.createElement("div");
+    addStyleToColumn(column, colNr, templateCss);
     return column;
   }
 
