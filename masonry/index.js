@@ -54,6 +54,7 @@ const opMasonry = (() => {
 
     // [[ Local Helpers ]]
     function updateMasonry(colNr) {
+      // TODO Place items on dom before selecting smart column
       parent.replaceChildren(
         isLazy
           ? getLazyMasonry(colNr, children, templateCss)
@@ -95,15 +96,25 @@ const opMasonry = (() => {
     const columnsFragment = makeColumnsFragment(colNr, templateCss);
     const columns = Array.from(columnsFragment.children);
     const heightsTracker = makeColumnHeightsTracker(colNr);
-    getSmartStackItemPlacementFn({ children, heightsTracker, columns })();
+    const cachedHeights = getChildrenHeightsCache(children);
+    getSmartStackItemPlacementFn({
+      children,
+      heightsTracker,
+      columns,
+      cachedHeights,
+    })();
     return columnsFragment;
   }
 
   function getMasonry(colNr, children, templateCss) {
-    let columnsFragment= makeColumnsFragment(colNr,templateCss)
+    let columnsFragment = makeColumnsFragment(colNr, templateCss);
     for (let colIndex = 0; colIndex < colNr; colIndex++) {
-      const column = columnsFragment.children[colIndex]
-      for ( let rowIndex = colIndex; rowIndex < children.length; rowIndex += colNr) {
+      const column = columnsFragment.children[colIndex];
+      for (
+        let rowIndex = colIndex;
+        rowIndex < children.length;
+        rowIndex += colNr
+      ) {
         column.appendChild(children[rowIndex]);
       }
     }
@@ -210,16 +221,25 @@ const opMasonry = (() => {
     }
     return placeLazyItems;
   }
-  function getSmartStackItemPlacementFn({ children, heightsTracker, columns }) {
+  function getSmartStackItemPlacementFn({
+    children,
+    heightsTracker,
+    columns,
+    cachedHeights,
+  }) {
     function placeSmartStackItems(index = 0) {
       if (index >= children.length) return;
       const child = children[index];
       const smallestColumnIndex = getSmallestColumnIndex(heightsTracker);
-      heightsTracker[smallestColumnIndex] += getHeight(child);
+      heightsTracker[smallestColumnIndex] += cachedHeights[index];
       columns[smallestColumnIndex].append(child);
       placeSmartStackItems(index + 1);
     }
     return placeSmartStackItems;
+  }
+
+  function getChildrenHeightsCache(children) {
+    return Array.from(children).map((child) => getHeight(child));
   }
 
   function batchAddEventTo(arr, event, callback) {
